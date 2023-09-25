@@ -393,8 +393,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1857498588}
   m_HandleRect: {fileID: 1857498587}
   m_Direction: 0
-  m_Value: -0.0000011302808
-  m_Size: 0.64000005
+  m_Value: -0.00000007926643
+  m_Size: 0.38399997
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -809,7 +809,7 @@ RectTransform:
   m_GameObject: {fileID: 1625080262}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.03333333, y: 0.10000001, z: 1}
+  m_LocalScale: {x: 0.02, y: 0.10000001, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 117256485}
@@ -932,7 +932,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 13.137001, y: 0}
+  m_AnchoredPosition: {x: 22.857, y: 0}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!212 &1876231240
@@ -1014,7 +1014,7 @@ RectTransform:
   m_GameObject: {fileID: 2016372963}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -9718.999}
-  m_LocalScale: {x: 3000, y: 1000, z: 1}
+  m_LocalScale: {x: 5000, y: 1000, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1625080263}
@@ -1023,7 +1023,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1500.0012, y: -531.5}
+  m_AnchoredPosition: {x: 2500.0002, y: -531.5}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!212 &2016372965
@@ -1091,7 +1091,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialBranchRooms: {x: 1, y: 4}
-  roomQuantity: {x: 20, y: 20}
+  roomQuantity: {x: 10, y: 10}
   room: {fileID: 117256484}
   roomsIcon:
   - {fileID: 0}
@@ -1182,7 +1182,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5522167187420403512, guid: 707aa7ca082e056409ad33adf9b1e4f5, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -14.25
+      value: -24.239998
       objectReference: {fileID: 0}
     - target: {fileID: 5522167187420403512, guid: 707aa7ca082e056409ad33adf9b1e4f5, type: 3}
       propertyPath: m_AnchoredPosition.y
