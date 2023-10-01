@@ -14,7 +14,7 @@ using System;
 
 public class MapGenerator : MonoBehaviour
 {
-    [SerializeField] Vector2Int initialBranchRooms; //x=min y=max
+    Vector2Int initialBranchRooms = new Vector2Int(1,4); //x=min y=max
     int initialBranch = 0;
     [SerializeField] Vector2Int roomQuantity;
     int segments = 0;
@@ -22,8 +22,10 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] GameObject room;
     [SerializeField] Sprite[] roomsIcon = new Sprite[4];
 
-    [SerializeField] GameObject initialRoom;
-    [SerializeField] GameObject finalRoom;
+    [SerializeField] GameObject initialRoomGO;
+    [SerializeField] GameObject finalRoomGO;
+    [SerializeField] Node finalRoom = new Node();
+    [SerializeField] Node initialRoom = new Node();
 
     [SerializeField] Material lineRenderMaterial;
     [SerializeField] Gradient lineRenderColor;
@@ -34,10 +36,11 @@ public class MapGenerator : MonoBehaviour
 
     [SerializeField, Range(0,100)] int deleteRoomPercentage4, deleteRoomPercentage3, deleteRoomPercentage2;
 
-    [Serializable]
+    
     class Node {
 
-        public List<Node> conectedTo = new List<Node>();
+        public List<Node> conectedToNext = new List<Node>();
+        public List<Node> conectedToPrev = new List<Node>();
         public GameObject nodeGO;
         public Node(){}
     
@@ -56,10 +59,10 @@ public class MapGenerator : MonoBehaviour
 
     private void GenerateNodes()
     {
-        float initRoomWidthOffsetY = Mathf.Abs(initialRoom.transform.localScale.y/2);
-        float finalRoomWidthOffsetX = Mathf.Abs(finalRoom.transform.localScale.x/2);
+        float initRoomWidthOffsetY = Mathf.Abs(initialRoomGO.transform.localScale.y/2);
+        float finalRoomWidthOffsetX = Mathf.Abs(finalRoomGO.transform.localScale.x/2);
 
-        float totalDistanceIF = Mathf.Abs((finalRoom.transform.position.x) - (initialRoom.transform.position.x));
+        float totalDistanceIF = Mathf.Abs((finalRoomGO.transform.position.x) - (initialRoomGO.transform.position.x));
         Debug.Log("Dist: " + totalDistanceIF);
 
 
@@ -192,12 +195,12 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
-    private void MakeConnections() {        
+    private void MakeConnections() {      
 
-
-        for (int i = nodesContainers.Count-1; i > 0; i--)
+        for (int i = nodesContainers.Count-1; i >= 0; i--)
         {
             GameObject nextContainer;
+            bool traba=false;
 
             if (i - 1 >= 0)
             {
@@ -208,11 +211,28 @@ public class MapGenerator : MonoBehaviour
             for (int j = 0; j < nodesContainers[i].transform.childCount; j++)
             {
                 Node node = new Node();
+                
                 nodesList.Add(node);
                 Node nextNode = new Node();
                 node.nodeGO = nodesContainers[i].transform.GetChild(j).gameObject;
-                nextNode.nodeGO =null;//null default
+                nextNode.nodeGO =null;//null default                
                 float distanceBetweenNodes=10000;//Default high value
+
+                if (i == nodesContainers.Count - 1)
+                {
+                    finalRoom.nodeGO = finalRoomGO.gameObject;
+                    DrawPaths(finalRoom, node);
+                }
+                if (i == 1 && !traba) {
+                    Node nodeAUX = new Node();
+                    for (int z = 0; z < nodesContainers[i-1].transform.childCount; z++)
+                    {
+                        nodeAUX.nodeGO = nodesContainers[i - 1].transform.GetChild(z).gameObject;
+                        initialRoom.nodeGO = initialRoomGO.gameObject;
+                        DrawPaths(nodeAUX, initialRoom);
+                        traba= true;
+                    }                   
+                }
 
                 for (int k = 0; k < nextContainer.transform.childCount; k++)
                 {
@@ -291,6 +311,9 @@ public class MapGenerator : MonoBehaviour
 
             }
         }
+
+
+
     }
 
     private void DrawPaths(Node node, Node nextNode) {
@@ -307,11 +330,13 @@ public class MapGenerator : MonoBehaviour
         lineRenderer.SetPosition(0, node.nodeGO.transform.localPosition);
         lineRenderer.SetPosition(1, nextNode.nodeGO.transform.localPosition);
         node.nodeGO.AddComponent<MaintainLineRenderer>().AssignProperties(lineRenderer, node.nodeGO.transform, nextNode.nodeGO.transform);
-        node.conectedTo.Add(nextNode);
+        node.conectedToNext.Add(nextNode);
+        nextNode.conectedToPrev.Add(node);
     }
+
     private void OnDrawGizmos()    {
 
-        float initRoomWidthOffsetX = Mathf.Abs(initialRoom.transform.localScale.x / 2);
+        float initRoomWidthOffsetX = Mathf.Abs(initialRoomGO.transform.localScale.x / 2);
         float roomHeightHalved = (gameObject.GetComponent<Renderer>().bounds.size.y / 2f) - initRoomWidthOffsetX;
         float roomHeight = (gameObject.GetComponent<Renderer>().bounds.size.y) - initRoomWidthOffsetX;
         float yOffset = initRoomWidthOffsetX * 2;//*2 porque se puede dar que se toquen los nodos
@@ -332,12 +357,5 @@ public class MapGenerator : MonoBehaviour
         Debug.DrawLine(new Vector2(-1000,0), new Vector2(1000, -roomHeight + yOffset), Color.yellow);
         Debug.DrawLine(new Vector2(-1000,0), new Vector2(1000, (roomHeight / 3) + yOffset), Color.yellow);
         Debug.DrawLine(new Vector2(-1000,0), new Vector2(1000, roomHeight - yOffset), Color.yellow);
-
-
-
-        //Debug.DrawLine(new Vector2(-1000, roomHeightHalved / 2), new Vector2(1000, (roomHeightHalved / 2)));
-        //Debug.DrawLine(new Vector2(-1000,-roomHeightHalved / 2), new Vector2(1000, (-roomHeightHalved / 2)));
-        //Debug.DrawLine(new Vector2(-1000,0), new Vector2(1000, -roomHeight));
-        //Debug.DrawLine(new Vector2(-1000,0), new Vector2(1000, roomHeight));
     }
 }

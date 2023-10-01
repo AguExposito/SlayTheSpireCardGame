@@ -1098,8 +1098,8 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  initialRoom: {fileID: 117256484}
-  finalRoom: {fileID: 1876231238}
+  initialRoomGO: {fileID: 117256484}
+  finalRoomGO: {fileID: 1876231238}
   lineRenderMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   lineRenderColor:
     serializedVersion: 2
