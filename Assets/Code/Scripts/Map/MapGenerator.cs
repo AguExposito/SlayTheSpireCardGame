@@ -9,6 +9,8 @@ using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCou
 using TMPro;
 using UnityEngine.UI;
 using UnityEditor.Experimental.GraphView;
+using System.Linq;
+using System;
 
 public class MapGenerator : MonoBehaviour
 {
@@ -28,14 +30,24 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] Scrollbar scrollbar;
 
     [SerializeField] List<GameObject> nodesContainers = new List<GameObject>();
+    [SerializeField] List<Node> nodesList = new List<Node>();
 
     [SerializeField, Range(0,100)] int deleteRoomPercentage4, deleteRoomPercentage3, deleteRoomPercentage2;
+
+    [Serializable]
+    class Node {
+
+        public List<Node> conectedTo = new List<Node>();
+        public GameObject nodeGO;
+        public Node(){}
+    
+    }
 
 
     // Start is called before the first frame update
     void Start()
     {   
-        segments = Random.Range(roomQuantity.x, roomQuantity.y+1);
+        segments = UnityEngine.Random.Range(roomQuantity.x, roomQuantity.y+1);
         Debug.Log("Segments: "+ segments);
 
         GenerateNodes();
@@ -62,7 +74,7 @@ public class MapGenerator : MonoBehaviour
 
         for (int k = 0; k< segments; k++) {
 
-            initialBranch = Random.Range(initialBranchRooms.x, initialBranchRooms.y+1);
+            initialBranch = UnityEngine.Random.Range(initialBranchRooms.x, initialBranchRooms.y+1);
             counter += segmentDist;
             GameObject roomContainer = new GameObject(k + " RoomContainer");
             roomContainer.transform.SetParent(gameObject.transform.GetChild(0));
@@ -75,12 +87,12 @@ public class MapGenerator : MonoBehaviour
                 float roomHeightHalved = (gameObject.GetComponent<Renderer>().bounds.size.y / 2f) - initRoomWidthOffsetY;
                 float roomHeight = (gameObject.GetComponent<Renderer>().bounds.size.y/2) - initRoomWidthOffsetY;
                 float yOffset = initRoomWidthOffsetY * 2;//*2 porque se puede dar que se toquen los nodos                
-                GameObject generatedNode;
+                Node node = new Node();
 
                 if (initialBranch % 2 == 0)
                 {
                     float randomPosY = 0;
-                    float randomPosX = Random.Range(-1,1);
+                    float randomPosX = UnityEngine.Random.Range(-1,1);
                     int deleteRandomPercentage=0;
 
                     if (initialBranch == 2)
@@ -88,8 +100,8 @@ public class MapGenerator : MonoBehaviour
 
                         switch (i)
                         {
-                            case 1: { randomPosY = Random.Range(yOffset, roomHeight); } break;
-                            case 2: { randomPosY = Random.Range(-yOffset, -roomHeight); } break;
+                            case 1: { randomPosY = UnityEngine.Random.Range(yOffset, roomHeight); } break;
+                            case 2: { randomPosY = UnityEngine.Random.Range(-yOffset, -roomHeight); } break;
                         }
                         deleteRandomPercentage = deleteRoomPercentage2;
                         //room.GetComponent<SpriteRenderer>().color = Color.yellow;
@@ -98,10 +110,10 @@ public class MapGenerator : MonoBehaviour
                     {
                         switch (i)
                         {
-                            case 1: { randomPosY = Random.Range(yOffset, roomHeight / 2); } break;
-                            case 2: { randomPosY = Random.Range(-yOffset, -roomHeight / 2); } break;
-                            case 3: { randomPosY = Random.Range(yOffset + (roomHeight / 2), roomHeight); } break;
-                            case 4: { randomPosY = Random.Range(-yOffset - (roomHeight / 2), -roomHeight); } break;
+                            case 1: { randomPosY = UnityEngine.Random.Range(yOffset, roomHeight / 2); } break;
+                            case 2: { randomPosY = UnityEngine.Random.Range(-yOffset, -roomHeight / 2); } break;
+                            case 3: { randomPosY = UnityEngine.Random.Range(yOffset + (roomHeight / 2), roomHeight); } break;
+                            case 4: { randomPosY = UnityEngine.Random.Range(-yOffset - (roomHeight / 2), -roomHeight); } break;
                         }
                         deleteRandomPercentage = deleteRoomPercentage4;
                         //room.GetComponent<SpriteRenderer>().color = Color.blue;
@@ -109,25 +121,25 @@ public class MapGenerator : MonoBehaviour
 
                     if (i > 1)
                     {
-                        int deadZone = Random.Range(0, 100);
+                        int deadZone = UnityEngine.Random.Range(0, 100);
                         if (deadZone > deleteRandomPercentage)
                         {
                             Vector2 spawnPositionPar = rectPos + new Vector2(counter - mapOffsetX + randomPosX, randomPosY);
                             Debug.Log("Par");
-                            generatedNode=Instantiate(room, spawnPositionPar, Quaternion.identity, roomContainer.transform);
+                            node.nodeGO=Instantiate(room, spawnPositionPar, Quaternion.identity, roomContainer.transform);
                         }
                         else { break; }
                     }
                     else { 
                         Vector2 spawnPositionPar = rectPos + new Vector2(counter - mapOffsetX + randomPosX, randomPosY);
                         Debug.Log("Par");
-                        generatedNode=Instantiate(room, spawnPositionPar, Quaternion.identity, roomContainer.transform);
+                        node.nodeGO = Instantiate(room, spawnPositionPar, Quaternion.identity, roomContainer.transform);
                     }
                 }
                 else { 
 
                     float randomPosY = 0;
-                    float randomPosX = Random.Range(-1, 1);
+                    float randomPosX = UnityEngine.Random.Range(-1, 1);
                     int deleteRandomPercentage = 0;
 
                     if (initialBranch == 1)
@@ -135,7 +147,7 @@ public class MapGenerator : MonoBehaviour
 
                         switch (i)
                         {
-                            case 1: { randomPosY = Random.Range(-roomHeight, roomHeight); } break;
+                            case 1: { randomPosY = UnityEngine.Random.Range(-roomHeight, roomHeight); } break;
                         }
                         //room.GetComponent<SpriteRenderer>().color = Color.black;
                     }
@@ -143,9 +155,9 @@ public class MapGenerator : MonoBehaviour
                     {
                         switch (i)
                         {
-                            case 1: { randomPosY = Random.Range(-(roomHeight / 3)+ yOffset, (roomHeight / 3)- yOffset); } break;
-                            case 2: { randomPosY = Random.Range(-(roomHeight / 3)- yOffset, -roomHeight+ yOffset); } break;
-                            case 3: { randomPosY = Random.Range((roomHeight / 3) + yOffset, roomHeight- yOffset); } break;
+                            case 1: { randomPosY = UnityEngine.Random.Range(-(roomHeight / 3)+ yOffset, (roomHeight / 3)- yOffset); } break;
+                            case 2: { randomPosY = UnityEngine.Random.Range(-(roomHeight / 3)- yOffset, -roomHeight+ yOffset); } break;
+                            case 3: { randomPosY = UnityEngine.Random.Range((roomHeight / 3) + yOffset, roomHeight- yOffset); } break;
                         }
                         deleteRandomPercentage = deleteRoomPercentage3;
                         //room.GetComponent<SpriteRenderer>().color = Color.red;
@@ -153,12 +165,12 @@ public class MapGenerator : MonoBehaviour
 
                     if (i > 1)
                     {
-                        int deadZone = Random.Range(0, 100);
+                        int deadZone = UnityEngine.Random.Range(0, 100);
                         if (deadZone > deleteRandomPercentage)
                         {
                             Vector2 spawnPositionPar = rectPos + new Vector2(counter - mapOffsetX + randomPosX, randomPosY);
                             Debug.Log("Impar");
-                            generatedNode=Instantiate(room, spawnPositionPar, Quaternion.identity, roomContainer.transform);
+                            node.nodeGO = Instantiate(room, spawnPositionPar, Quaternion.identity, roomContainer.transform);
                         }
                         else { break; }
                     }
@@ -166,23 +178,22 @@ public class MapGenerator : MonoBehaviour
                     {
                         Vector2 spawnPositionPar = rectPos + new Vector2(counter - mapOffsetX + randomPosX, randomPosY);
                         Debug.Log("Par");
-                        generatedNode=Instantiate(room, spawnPositionPar, Quaternion.identity, roomContainer.transform);
+                        node.nodeGO = Instantiate(room, spawnPositionPar, Quaternion.identity, roomContainer.transform);
                     }
                 }
-                 
-                generatedNode.tag = "Node";
+
+                node.nodeGO.tag = "Node";
+                
+                if (!nodesContainers.Contains(node.nodeGO.transform.parent.gameObject))
+                {
+                    nodesContainers.Add(node.nodeGO.transform.parent.gameObject);
+                }
             }
         }
     }
 
     private void MakeConnections() {        
 
-        for (int i = 0; i < gameObject.transform.GetChild(0).transform.childCount; i++)
-        {
-            if (gameObject.transform.GetChild(0).transform.GetChild(i).tag == "NodeContainer") {
-                nodesContainers.Add(gameObject.transform.GetChild(0).transform.GetChild(i).gameObject);
-            }
-        }
 
         for (int i = nodesContainers.Count-1; i > 0; i--)
         {
@@ -196,8 +207,11 @@ public class MapGenerator : MonoBehaviour
 
             for (int j = 0; j < nodesContainers[i].transform.childCount; j++)
             {
-                GameObject node = nodesContainers[i].transform.GetChild(j).gameObject;
-                GameObject nextNode=null;//null default
+                Node node = new Node();
+                nodesList.Add(node);
+                Node nextNode = new Node();
+                node.nodeGO = nodesContainers[i].transform.GetChild(j).gameObject;
+                nextNode.nodeGO =null;//null default
                 float distanceBetweenNodes=10000;//Default high value
 
                 for (int k = 0; k < nextContainer.transform.childCount; k++)
@@ -205,42 +219,83 @@ public class MapGenerator : MonoBehaviour
                     GameObject nextNodeAUX = nextContainer.transform.GetChild(k).gameObject;
                     float distanceBetweenNodesAUX;
 
-                    Vector2 nodesV2 = nextNodeAUX.transform.position - node.transform.position;
+                    Vector2 nodesV2 = nextNodeAUX.transform.position - node.nodeGO.transform.position;
                     distanceBetweenNodesAUX = Mathf.Abs( nodesV2.magnitude);
 
                     if (distanceBetweenNodesAUX< distanceBetweenNodes) {
                         distanceBetweenNodes = distanceBetweenNodesAUX;
-                        nextNode= nextContainer.transform.GetChild(k).gameObject;
+                        nextNode.nodeGO = nextContainer.transform.GetChild(k).gameObject;
                     }
-                }                
-
-                if (nodesContainers[i].transform.childCount>= nextContainer.transform.childCount) {
-                    DrawPaths(node, nextNode);
                 }
-                else
+
+                List<GameObject> connectedNodes = new List<GameObject>();
+
+                DrawPaths(node, nextNode);
+                connectedNodes.Add(nextNode.nodeGO);
+
+                for (int a = 0; a < nextContainer.transform.childCount; a++)
                 {
-                    switch (nodesContainers[i].transform.childCount)
+                    if (!connectedNodes.Contains(nextContainer.transform.GetChild(a).gameObject))
                     {
-                        case 1:
+                        float[] distances = new float[4];
+
+                        for (int b = 0; b < nodesContainers[i].transform.childCount; b++)
+                        {
+                            distances[b] = (nodesContainers[i].transform.GetChild(b).transform.position - nextContainer.transform.GetChild(a).transform.position).magnitude;
+
+                        }
+
+                        for (int b = 0; b < distances.Length; b++)
+                        {
+                            if (distances[b] == 0) { distances[b] = 10000; }
+                        }
+
+                        nextNode.nodeGO = nextContainer.transform.GetChild(a).gameObject;
+
+
+                        if (distances[0] <= distances[1] && distances[0] <= distances[2] && distances[0] <= distances[3])
+                        {
+                            node.nodeGO = nodesContainers[i].transform.GetChild(0).gameObject;
+                            DrawPaths(node, nextNode);
+                            Debug.Log("0");
+                        }
+                        else
+                        {
+                            if (distances[1] < distances[0] && distances[1] < distances[2] && distances[1] < distances[3])
                             {
-                                for (int a = 0; a < nextContainer.transform.childCount; a++)
+                                node.nodeGO = nodesContainers[i].transform.GetChild(1).gameObject;
+                                DrawPaths(node, nextNode);
+                                Debug.Log("1");
+                            }
+                            else {
+
+                                if (distances[2] < distances[1] && distances[2] < distances[0] && distances[2] < distances[3])
                                 {
-                                    nextNode = nextContainer.transform.GetChild(a).gameObject;
+                                    node.nodeGO = nodesContainers[i].transform.GetChild(2).gameObject;
                                     DrawPaths(node, nextNode);
+                                    Debug.Log("2");
+                                }
+                                else {
+
+                                    if (distances[3] < distances[1] && distances[3] < distances[2] && distances[3] < distances[0])
+                                    {
+                                        node.nodeGO = nodesContainers[i].transform.GetChild(3).gameObject;
+                                        DrawPaths(node, nextNode);
+                                        Debug.Log("3");
+                                    }
                                 }
                             }
-                            break;
-                        case 2: { } break;
-                        case 3: { } break;
+                        }
                     }
                 }
+
             }
         }
     }
 
-    private void DrawPaths(GameObject node, GameObject nextNode) {
+    private void DrawPaths(Node node, Node nextNode) {
         GameObject lineRendererContainer = new GameObject();
-        lineRendererContainer.transform.parent = node.transform;
+        lineRendererContainer.transform.parent = node.nodeGO.transform;
 
         LineRenderer lineRenderer = lineRendererContainer.AddComponent<LineRenderer>();
         lineRenderer.positionCount = 2;
@@ -249,9 +304,10 @@ public class MapGenerator : MonoBehaviour
         lineRenderer.widthMultiplier = 0.25f;
         lineRenderer.colorGradient = lineRenderColor;
 
-        lineRenderer.SetPosition(0, node.transform.localPosition);
-        lineRenderer.SetPosition(1, nextNode.transform.localPosition);
-        node.AddComponent<MaintainLineRenderer>().AssignProperties(lineRenderer, node.transform, nextNode.transform);
+        lineRenderer.SetPosition(0, node.nodeGO.transform.localPosition);
+        lineRenderer.SetPosition(1, nextNode.nodeGO.transform.localPosition);
+        node.nodeGO.AddComponent<MaintainLineRenderer>().AssignProperties(lineRenderer, node.nodeGO.transform, nextNode.nodeGO.transform);
+        node.conectedTo.Add(nextNode);
     }
     private void OnDrawGizmos()    {
 
