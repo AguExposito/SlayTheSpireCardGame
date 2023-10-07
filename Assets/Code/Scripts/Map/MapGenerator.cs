@@ -14,6 +14,7 @@ using System;
 
 public class MapGenerator : MonoBehaviour
 {
+    private static MapGenerator mapGen;
     Vector2Int initialBranchRooms = new Vector2Int(1,4); //x=min y=max
     int initialBranch = 0;
     [SerializeField] Vector2Int roomQuantity;
@@ -38,18 +39,60 @@ public class MapGenerator : MonoBehaviour
 
     
     class Node {
-
+        public MapGenerator mapGenerator;
         public List<Node> conectedToNext = new List<Node>();
         public List<Node> conectedToPrev = new List<Node>();
         public GameObject nodeGO;
-        public Node(){}
-    
+        public Sprite sprite;
+        public enum roomType {fight, events, subBoss, relax};
+        roomType rType = new roomType();
+
+        public Node()
+        {
+            
+        }
+        public void AssignGOandSprite(GameObject room, Vector3 spawnPosition,Transform parent) {
+            mapGenerator = mapGen;
+            int i = UnityEngine.Random.Range(1, 5);
+            Debug.Log("EJECUTADO " + i);
+            switch (i)
+            {
+                case 1:
+                    {
+                        rType = roomType.fight;
+                        sprite = mapGenerator.roomsIcon[0];
+                    }
+                    break;
+                case 2:
+                    {
+                        rType = roomType.events;
+                        sprite = mapGenerator.roomsIcon[1];
+                    }
+                    break;
+                case 3:
+                    {
+                        rType = roomType.subBoss;
+                        sprite = mapGenerator.roomsIcon[2];
+                    }
+                    break;
+                case 4:
+                    {
+                        rType = roomType.relax;
+                        sprite = mapGenerator.roomsIcon[3];
+                    }
+                    break;
+            }
+            nodeGO = Instantiate(room, spawnPosition, Quaternion.identity, parent);
+            nodeGO.GetComponent<Image>().sprite = sprite;
+        }
+
     }
 
 
     // Start is called before the first frame update
     void Start()
-    {   
+    {
+        mapGen = this;
         segments = UnityEngine.Random.Range(roomQuantity.x, roomQuantity.y+1);
         Debug.Log("Segments: "+ segments);
 
@@ -129,14 +172,14 @@ public class MapGenerator : MonoBehaviour
                         {
                             Vector2 spawnPositionPar = rectPos + new Vector2(counter - mapOffsetX + randomPosX, randomPosY);
                             Debug.Log("Par");
-                            node.nodeGO=Instantiate(room, spawnPositionPar, Quaternion.identity, roomContainer.transform);
+                            node.AssignGOandSprite(room, spawnPositionPar, roomContainer.transform);
                         }
                         else { break; }
                     }
                     else { 
                         Vector2 spawnPositionPar = rectPos + new Vector2(counter - mapOffsetX + randomPosX, randomPosY);
                         Debug.Log("Par");
-                        node.nodeGO = Instantiate(room, spawnPositionPar, Quaternion.identity, roomContainer.transform);
+                        node.AssignGOandSprite(room, spawnPositionPar, roomContainer.transform);
                     }
                 }
                 else { 
@@ -173,7 +216,7 @@ public class MapGenerator : MonoBehaviour
                         {
                             Vector2 spawnPositionPar = rectPos + new Vector2(counter - mapOffsetX + randomPosX, randomPosY);
                             Debug.Log("Impar");
-                            node.nodeGO = Instantiate(room, spawnPositionPar, Quaternion.identity, roomContainer.transform);
+                            node.AssignGOandSprite(room, spawnPositionPar, roomContainer.transform);
                         }
                         else { break; }
                     }
@@ -181,7 +224,7 @@ public class MapGenerator : MonoBehaviour
                     {
                         Vector2 spawnPositionPar = rectPos + new Vector2(counter - mapOffsetX + randomPosX, randomPosY);
                         Debug.Log("Par");
-                        node.nodeGO = Instantiate(room, spawnPositionPar, Quaternion.identity, roomContainer.transform);
+                        node.AssignGOandSprite(room, spawnPositionPar, roomContainer.transform);
                     }
                 }
 
