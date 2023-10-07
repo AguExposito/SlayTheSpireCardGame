@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -11,14 +11,14 @@ using UnityEngine.UI;
 using UnityEditor.Experimental.GraphView;
 using System.Linq;
 using System;
+using Unity.Mathematics;
 
 public class MapGenerator : MonoBehaviour
 {
     private static MapGenerator mapGen;
     Vector2Int initialBranchRooms = new Vector2Int(1,4); //x=min y=max
     int initialBranch = 0;
-    [SerializeField] Vector2Int roomQuantity;
-    int segments = 0;
+    int currentStep = 0;
 
     [SerializeField] GameObject room;
     [SerializeField] Sprite[] roomsIcon = new Sprite[4];
@@ -35,7 +35,12 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] List<GameObject> nodesContainers = new List<GameObject>();
     [SerializeField] List<Node> nodesList = new List<Node>();
 
+
+    [SerializeField, Header("Room Spawn Settings")] Vector2Int roomQuantity;
+    public int segments = 0;
     [SerializeField, Range(0,100)] int deleteRoomPercentage4, deleteRoomPercentage3, deleteRoomPercentage2;
+    [Header("Room Type Settings")]
+    [SerializeField, Range(0,100), Tooltip("They must sum 100 to work")] int fightPercentage, eventPercentage, relaxPercentage, subBossRooms;
 
     
     class Node {
@@ -53,8 +58,30 @@ public class MapGenerator : MonoBehaviour
         }
         public void AssignGOandSprite(GameObject room, Vector3 spawnPosition,Transform parent) {
             mapGenerator = mapGen;
-            int i = UnityEngine.Random.Range(1, 5);
-            Debug.Log("EJECUTADO " + i);
+            int i=0;
+
+            if (mapGen.currentStep >= Mathf.Round(mapGen.segments / 2)) //es <= porque el mapa se arma de derecha a izquierda
+            {
+                int random = UnityEngine.Random.Range(0, 101);
+
+                if (random <= mapGen.fightPercentage) { i = 1; }
+                else if (random > mapGen.fightPercentage && random <= mapGen.fightPercentage + mapGen.eventPercentage) { i = 2; }
+                else if (random > mapGen.fightPercentage + mapGen.eventPercentage && random <= mapGen.fightPercentage + mapGen.eventPercentage+mapGen.relaxPercentage) { i = 3; }
+                else { i = 4; }
+
+            }
+            else {
+                int random = UnityEngine.Random.Range(0, 101);
+                if (random <= mapGen.fightPercentage) { i = 1; }
+                else if (random > mapGen.fightPercentage && random <= mapGen.fightPercentage + mapGen.eventPercentage) { i = 2; }
+                else if (random > mapGen.fightPercentage + mapGen.eventPercentage && random <= mapGen.fightPercentage + mapGen.eventPercentage + mapGen.relaxPercentage) { i = 3; }
+                else { i = 2; } // sino cae en ninguna opción el resultado es events en lugar de subBoss
+            }
+
+            if (mapGen.segments-1 == mapGen.currentStep) { i = 3; }
+            if (mapGen.currentStep == Mathf.Round(mapGen.segments / 2)-1) { i = 4;  }
+
+            
             switch (i)
             {
                 case 1:
@@ -71,17 +98,21 @@ public class MapGenerator : MonoBehaviour
                     break;
                 case 3:
                     {
-                        rType = roomType.subBoss;
+                        rType = roomType.relax;
                         sprite = mapGenerator.roomsIcon[2];
                     }
                     break;
                 case 4:
                     {
+
                         rType = roomType.relax;
                         sprite = mapGenerator.roomsIcon[3];
                     }
                     break;
             }
+
+            
+
             nodeGO = Instantiate(room, spawnPosition, Quaternion.identity, parent);
             nodeGO.GetComponent<Image>().sprite = sprite;
         }
@@ -119,7 +150,7 @@ public class MapGenerator : MonoBehaviour
         
 
         for (int k = 0; k< segments; k++) {
-
+            currentStep = k;
             initialBranch = UnityEngine.Random.Range(initialBranchRooms.x, initialBranchRooms.y+1);
             counter += segmentDist;
             GameObject roomContainer = new GameObject(k + " RoomContainer");
@@ -320,7 +351,6 @@ public class MapGenerator : MonoBehaviour
                         {
                             node.nodeGO = nodesContainers[i].transform.GetChild(0).gameObject;
                             DrawPaths(node, nextNode);
-                            Debug.Log("0");
                         }
                         else
                         {
@@ -328,7 +358,6 @@ public class MapGenerator : MonoBehaviour
                             {
                                 node.nodeGO = nodesContainers[i].transform.GetChild(1).gameObject;
                                 DrawPaths(node, nextNode);
-                                Debug.Log("1");
                             }
                             else {
 
@@ -336,7 +365,6 @@ public class MapGenerator : MonoBehaviour
                                 {
                                     node.nodeGO = nodesContainers[i].transform.GetChild(2).gameObject;
                                     DrawPaths(node, nextNode);
-                                    Debug.Log("2");
                                 }
                                 else {
 
@@ -344,7 +372,6 @@ public class MapGenerator : MonoBehaviour
                                     {
                                         node.nodeGO = nodesContainers[i].transform.GetChild(3).gameObject;
                                         DrawPaths(node, nextNode);
-                                        Debug.Log("3");
                                     }
                                 }
                             }

@@ -1379,13 +1379,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 007a05412a44f964d92ae538af3e16a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomQuantity: {x: 10, y: 10}
   room: {fileID: 117256484}
   roomsIcon:
   - {fileID: 21300000, guid: 2eb946f5d7dce764db48eaf92fa0b251, type: 3}
   - {fileID: 21300000, guid: 216c53aef79eaaf40a1800cc5e542dc3, type: 3}
-  - {fileID: 21300000, guid: 0ccc508108fa6ed4fa11b4a467d7f609, type: 3}
   - {fileID: 21300000, guid: be340a165cb9c8d4cb50f1deeb51d4ea, type: 3}
+  - {fileID: 21300000, guid: 0ccc508108fa6ed4fa11b4a467d7f609, type: 3}
   initialRoomGO: {fileID: 117256484}
   finalRoomGO: {fileID: 1876231238}
   lineRenderMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
@@ -1420,9 +1419,15 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   scrollbar: {fileID: 820955038}
   nodesContainers: []
+  roomQuantity: {x: 10, y: 15}
+  segments: 0
   deleteRoomPercentage4: 25
   deleteRoomPercentage3: 10
   deleteRoomPercentage2: 0
+  fightPercentage: 50
+  eventPercentage: 25
+  relaxPercentage: 10
+  subBossRooms: 15
 --- !u!1001 &5522167187386656285
 PrefabInstance:
   m_ObjectHideFlags: 0
