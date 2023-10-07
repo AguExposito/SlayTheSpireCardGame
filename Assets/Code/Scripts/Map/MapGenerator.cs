@@ -12,6 +12,8 @@ using UnityEditor.Experimental.GraphView;
 using System.Linq;
 using System;
 using Unity.Mathematics;
+using UnityEngine.Events;
+using UnityEngine.Networking.Types;
 
 public class MapGenerator : MonoBehaviour
 {
@@ -34,6 +36,7 @@ public class MapGenerator : MonoBehaviour
 
     [SerializeField] List<GameObject> nodesContainers = new List<GameObject>();
     [SerializeField] List<Node> nodesList = new List<Node>();
+    [SerializeField] List<GameObject> nodesList2 = new List<GameObject>();
 
 
     [SerializeField, Header("Room Spawn Settings")] Vector2Int roomQuantity;
@@ -42,11 +45,12 @@ public class MapGenerator : MonoBehaviour
     [Header("Room Type Settings")]
     [SerializeField, Range(0,100), Tooltip("They must sum 100 to work")] int fightPercentage, eventPercentage, relaxPercentage, subBossRooms;
 
-    
-    class Node {
+    UnityAction activeNodesAction;
+    [Serializable]
+    class Node{
         public MapGenerator mapGenerator;
-        public List<Node> conectedToNext = new List<Node>();
-        public List<Node> conectedToPrev = new List<Node>();
+        public List<GameObject> conectedToNext = new List<GameObject>();
+        public List<GameObject> conectedToPrev = new List<GameObject>();
         public GameObject nodeGO;
         public Sprite sprite;
         public enum roomType {fight, events, subBoss, relax};
@@ -115,10 +119,22 @@ public class MapGenerator : MonoBehaviour
 
             nodeGO = Instantiate(room, spawnPosition, Quaternion.identity, parent);
             nodeGO.GetComponent<Image>().sprite = sprite;
+            nodeGO.GetComponent<Button>().interactable = false;
+            
+        }
+        public void ActiveNextNodes()
+        {
+            Debug.Log(conectedToPrev.Count + " COunt");
+            foreach (GameObject prevNode in conectedToPrev)
+            {
+                prevNode.GetComponent<Button>().interactable = true;
+                mapGen.nodesList2.Add(prevNode);
+            }
         }
 
     }
-
+    
+    
 
     // Start is called before the first frame update
     void Start()
@@ -129,6 +145,22 @@ public class MapGenerator : MonoBehaviour
 
         GenerateNodes();
         MakeConnections();
+
+        foreach (GameObject n in nodesContainers)
+        {
+            for (int i = 0; i < n.transform.childCount; i++)
+            {
+                nodesList.Add(n.transform.GetChild(i).GetComponent<Node>());
+            }
+        }
+
+        activeNodesAction += initialRoom.ActiveNextNodes;        
+        initialRoom.nodeGO.GetComponent<Button>().onClick.AddListener(activeNodesAction);
+        foreach (Node n in nodesList)
+        {
+            activeNodesAction += n.ActiveNextNodes;
+            n.nodeGO.GetComponent<Button>().onClick.AddListener(activeNodesAction);
+        }
     }
 
     private void GenerateNodes()
@@ -379,6 +411,7 @@ public class MapGenerator : MonoBehaviour
                     }
                 }
 
+
             }
         }
 
@@ -400,8 +433,9 @@ public class MapGenerator : MonoBehaviour
         lineRenderer.SetPosition(0, node.nodeGO.transform.localPosition);
         lineRenderer.SetPosition(1, nextNode.nodeGO.transform.localPosition);
         node.nodeGO.AddComponent<MaintainLineRenderer>().AssignProperties(lineRenderer, node.nodeGO.transform, nextNode.nodeGO.transform);
-        node.conectedToNext.Add(nextNode);
-        nextNode.conectedToPrev.Add(node);
+        node.conectedToNext.Add(nextNode.nodeGO);
+        nextNode.conectedToPrev.Add(node.nodeGO);
+
     }
 
     private void OnDrawGizmos()    {

@@ -9,7 +9,7 @@ public class MaintainLineRenderer : MonoBehaviour
     private Transform startPoint;
     private Transform endPoint;
 
-    void Update()
+    void FixedUpdate()
     {
         lineRenderer.SetPosition(0, startPoint.position); // Set the start position of the LineRenderer
         lineRenderer.SetPosition(1, endPoint.position); // Set the end position of the LineRenderer
