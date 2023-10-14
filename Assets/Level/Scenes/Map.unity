@@ -926,7 +926,7 @@ RectTransform:
   m_GameObject: {fileID: 1876231238}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1625080263}
@@ -1123,6 +1123,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   room: {fileID: 117256484}
+  connectionPath: {fileID: 3095413645894835345, guid: 83c095a656e4a28409a68f37a93a444d, type: 3}
   roomsIcon:
   - {fileID: 21300000, guid: 2eb946f5d7dce764db48eaf92fa0b251, type: 3}
   - {fileID: 21300000, guid: f082e69f825d0aa44b687e592731c0a8, type: 3}
@@ -1130,6 +1131,18 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 0ccc508108fa6ed4fa11b4a467d7f609, type: 3}
   initialRoomGO: {fileID: 117256484}
   finalRoomGO: {fileID: 1876231238}
+  finalRoom:
+    mapGenerator: {fileID: 0}
+    conectedToNext: []
+    conectedToPrev: []
+    nodeGO: {fileID: 0}
+    sprite: {fileID: 0}
+  initialRoom:
+    mapGenerator: {fileID: 0}
+    conectedToNext: []
+    conectedToPrev: []
+    nodeGO: {fileID: 0}
+    sprite: {fileID: 0}
   lineRenderMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   lineRenderColor:
     serializedVersion: 2
@@ -1162,6 +1175,8 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   scrollbar: {fileID: 820955038}
   nodesContainers: []
+  nodesList: []
+  nodesList2: []
   roomQuantity: {x: 10, y: 15}
   segments: 0
   deleteRoomPercentage4: 25
@@ -1178,58 +1193,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1625080263}
     m_Modifications:
-    - target: {fileID: 117256486, guid: 707aa7ca082e056409ad33adf9b1e4f5, type: 3}
-      propertyPath: m_Colors.m_NormalColor.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 117256486, guid: 707aa7ca082e056409ad33adf9b1e4f5, type: 3}
-      propertyPath: m_Colors.m_NormalColor.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 117256486, guid: 707aa7ca082e056409ad33adf9b1e4f5, type: 3}
-      propertyPath: m_Colors.m_NormalColor.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 117256486, guid: 707aa7ca082e056409ad33adf9b1e4f5, type: 3}
-      propertyPath: m_Colors.m_DisabledColor.a
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 117256486, guid: 707aa7ca082e056409ad33adf9b1e4f5, type: 3}
-      propertyPath: m_Colors.m_DisabledColor.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 117256486, guid: 707aa7ca082e056409ad33adf9b1e4f5, type: 3}
-      propertyPath: m_Colors.m_DisabledColor.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 117256486, guid: 707aa7ca082e056409ad33adf9b1e4f5, type: 3}
-      propertyPath: m_Colors.m_DisabledColor.r
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 117256486, guid: 707aa7ca082e056409ad33adf9b1e4f5, type: 3}
-      propertyPath: m_Colors.m_SelectedColor.b
-      value: 0.1448469
-      objectReference: {fileID: 0}
-    - target: {fileID: 117256486, guid: 707aa7ca082e056409ad33adf9b1e4f5, type: 3}
-      propertyPath: m_Colors.m_SelectedColor.g
-      value: 0.7860457
-      objectReference: {fileID: 0}
-    - target: {fileID: 117256486, guid: 707aa7ca082e056409ad33adf9b1e4f5, type: 3}
-      propertyPath: m_Colors.m_SelectedColor.r
-      value: 0.990566
-      objectReference: {fileID: 0}
-    - target: {fileID: 117256486, guid: 707aa7ca082e056409ad33adf9b1e4f5, type: 3}
-      propertyPath: m_Colors.m_HighlightedColor.b
-      value: 0.6494749
-      objectReference: {fileID: 0}
-    - target: {fileID: 117256486, guid: 707aa7ca082e056409ad33adf9b1e4f5, type: 3}
-      propertyPath: m_Colors.m_HighlightedColor.g
-      value: 0.90687233
-      objectReference: {fileID: 0}
-    - target: {fileID: 117256486, guid: 707aa7ca082e056409ad33adf9b1e4f5, type: 3}
-      propertyPath: m_Colors.m_HighlightedColor.r
-      value: 0.990566
-      objectReference: {fileID: 0}
     - target: {fileID: 5522167187420403512, guid: 707aa7ca082e056409ad33adf9b1e4f5, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1318,5 +1281,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: InitialPoint
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 8923324004350321814, guid: 707aa7ca082e056409ad33adf9b1e4f5, type: 3}
+      propertyPath: mapGen
+      value: 
+      objectReference: {fileID: 2016372966}
+    - target: {fileID: 8923324004350321814, guid: 707aa7ca082e056409ad33adf9b1e4f5, type: 3}
+      propertyPath: nodeGO
+      value: 
+      objectReference: {fileID: 117256484}
+    m_RemovedComponents:
+    - {fileID: 8923324004350321814, guid: 707aa7ca082e056409ad33adf9b1e4f5, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 707aa7ca082e056409ad33adf9b1e4f5, type: 3}

@@ -15,6 +15,9 @@ using Unity.Mathematics;
 using UnityEngine.Events;
 using UnityEngine.Networking.Types;
 
+/// <summary>
+/// Generates Map Nodes and Connections
+/// </summary>
 public class MapGenerator : MonoBehaviour
 {
     private static MapGenerator mapGen;
@@ -23,6 +26,7 @@ public class MapGenerator : MonoBehaviour
     int currentStep = 0;
 
     [SerializeField] GameObject room;
+    [SerializeField] GameObject connectionPath;
     [SerializeField] Sprite[] roomsIcon = new Sprite[4];
 
     [SerializeField] GameObject initialRoomGO;
@@ -30,13 +34,9 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] Node finalRoom = new Node();
     [SerializeField] Node initialRoom = new Node();
 
-    [SerializeField] Material lineRenderMaterial;
-    [SerializeField] Gradient lineRenderColor;
-    [SerializeField] Scrollbar scrollbar;
-
     [SerializeField] List<GameObject> nodesContainers = new List<GameObject>();
     [SerializeField] List<Node> nodesList = new List<Node>();
-    [SerializeField] List<GameObject> nodesList2 = new List<GameObject>();
+    [SerializeField] List<Node> nodesList2 = new List<Node>();
 
 
     [SerializeField, Header("Room Spawn Settings")] Vector2Int roomQuantity;
@@ -63,7 +63,7 @@ public class MapGenerator : MonoBehaviour
         public void AssignGOandSprite(GameObject room, Vector3 spawnPosition,Transform parent) {
             mapGenerator = mapGen;
             int i=0;
-
+            //Algoritmo que decide de forma random qué nodo instanciar
             if (mapGen.currentStep >= Mathf.Round(mapGen.segments / 2)) //es <= porque el mapa se arma de derecha a izquierda
             {
                 int random = UnityEngine.Random.Range(0, 101);
@@ -118,6 +118,7 @@ public class MapGenerator : MonoBehaviour
             
 
             nodeGO = Instantiate(room, spawnPosition, Quaternion.identity, parent);
+            mapGen.nodesList.Add(this);
             nodeGO.GetComponent<Image>().sprite = sprite;
             nodeGO.GetComponent<Button>().interactable = false;
             
@@ -125,11 +126,13 @@ public class MapGenerator : MonoBehaviour
         public void ActiveNextNodes()
         {
             Debug.Log(conectedToPrev.Count + " COunt");
-            foreach (GameObject prevNode in conectedToPrev)
-            {
-                prevNode.GetComponent<Button>().interactable = true;
-                mapGen.nodesList2.Add(prevNode);
+            if (conectedToPrev.Count>0) {
+                foreach (GameObject prevNode in conectedToPrev)
+                {
+                    prevNode.GetComponent<Button>().interactable = true;
+                }
             }
+            mapGen.nodesList2.Add(this);
         }
 
     }
@@ -146,13 +149,6 @@ public class MapGenerator : MonoBehaviour
         GenerateNodes();
         MakeConnections();
 
-        foreach (GameObject n in nodesContainers)
-        {
-            for (int i = 0; i < n.transform.childCount; i++)
-            {
-                nodesList.Add(n.transform.GetChild(i).GetComponent<Node>());
-            }
-        }
 
         activeNodesAction += initialRoom.ActiveNextNodes;        
         initialRoom.nodeGO.GetComponent<Button>().onClick.AddListener(activeNodesAction);
@@ -166,7 +162,7 @@ public class MapGenerator : MonoBehaviour
     private void GenerateNodes()
     {
         float initRoomWidthOffsetY = Mathf.Abs(initialRoomGO.transform.localScale.y/2);
-        float finalRoomWidthOffsetX = Mathf.Abs(finalRoomGO.transform.localScale.x/2);
+        float finalRoomWidthOffsetX = Mathf.Abs(finalRoomGO.transform.localScale.x*3/2);
 
         float totalDistanceIF = Mathf.Abs((finalRoomGO.transform.position.x) - (initialRoomGO.transform.position.x));
         Debug.Log("Dist: " + totalDistanceIF);
@@ -180,7 +176,7 @@ public class MapGenerator : MonoBehaviour
         Vector2 rectPos = gameObject.GetComponent<RectTransform>().position;
 
         
-
+        //se itera por segmento
         for (int k = 0; k< segments; k++) {
             currentStep = k;
             initialBranch = UnityEngine.Random.Range(initialBranchRooms.x, initialBranchRooms.y+1);
@@ -190,6 +186,7 @@ public class MapGenerator : MonoBehaviour
             roomContainer.transform.localPosition = Vector2.zero+ Vector2.right*-(rectPos+(Vector2.right*1.5f)); //1.5 is half of the widht of the circles
             roomContainer.tag = "NodeContainer";
 
+            //se itera por un random definido por la cantidad de nodos que puede tener un segmento (de 1 a 4)
             for (int i = 1; i < initialBranch+1; i++) {
                 
                 float mapOffsetX = (totalDistanceIF) / 2;
@@ -198,13 +195,13 @@ public class MapGenerator : MonoBehaviour
                 float yOffset = initRoomWidthOffsetY * 2;//*2 porque se puede dar que se toquen los nodos                
                 Node node = new Node();
 
-                if (initialBranch % 2 == 0)
+                if (initialBranch % 2 == 0)//si es par
                 {
                     float randomPosY = 0;
                     float randomPosX = UnityEngine.Random.Range(-1,1);
                     int deleteRandomPercentage=0;
 
-                    if (initialBranch == 2)
+                    if (initialBranch == 2) //si la cantidad de nodos es 2
                     {
 
                         switch (i)
@@ -215,7 +212,7 @@ public class MapGenerator : MonoBehaviour
                         deleteRandomPercentage = deleteRoomPercentage2;
                         //room.GetComponent<SpriteRenderer>().color = Color.yellow;
                     }
-                    else
+                    else //si es 4
                     {
                         switch (i)
                         {
@@ -228,24 +225,26 @@ public class MapGenerator : MonoBehaviour
                         //room.GetComponent<SpriteRenderer>().color = Color.blue;
                     }
 
-                    if (i > 1)
+                    if (i > 1) //Si la cantidad de nodos es mayor (distinta) a 1
                     {
                         int deadZone = UnityEngine.Random.Range(0, 100);
-                        if (deadZone > deleteRandomPercentage)
+                        if (deadZone > deleteRandomPercentage) // compara si la tirada de dado (deadzone de 0 a 99) es mayor al porcentaje para borrarse, si lo es, instancia el objecto
                         {
                             Vector2 spawnPositionPar = rectPos + new Vector2(counter - mapOffsetX + randomPosX, randomPosY);
                             Debug.Log("Par");
                             node.AssignGOandSprite(room, spawnPositionPar, roomContainer.transform);
                         }
-                        else { break; }
+                        else { break; } //sino, sale del bucle
                     }
-                    else { 
+                    else //si es 1
+                    { 
                         Vector2 spawnPositionPar = rectPos + new Vector2(counter - mapOffsetX + randomPosX, randomPosY);
                         Debug.Log("Par");
                         node.AssignGOandSprite(room, spawnPositionPar, roomContainer.transform);
                     }
                 }
-                else { 
+                else //si es impar
+                { 
 
                     float randomPosY = 0;
                     float randomPosX = UnityEngine.Random.Range(-1, 1);
@@ -318,7 +317,6 @@ public class MapGenerator : MonoBehaviour
             {
                 Node node = new Node();
                 
-                nodesList.Add(node);
                 Node nextNode = new Node();
                 node.nodeGO = nodesContainers[i].transform.GetChild(j).gameObject;
                 nextNode.nodeGO =null;//null default                
@@ -420,21 +418,18 @@ public class MapGenerator : MonoBehaviour
     }
 
     private void DrawPaths(Node node, Node nextNode) {
-        GameObject lineRendererContainer = new GameObject();
-        lineRendererContainer.transform.parent = node.nodeGO.transform;
+        //creates new path gameObject
+        GameObject lineRenderer = Instantiate(connectionPath, node.nodeGO.transform);
+        lineRenderer.transform.localPosition = Vector3.zero;
+        lineRenderer.transform.localScale = new Vector3(Vector3.Distance(node.nodeGO.transform.position, nextNode.nodeGO.transform.position), lineRenderer.transform.localScale.y, 1); //calculates lenght
 
-        LineRenderer lineRenderer = lineRendererContainer.AddComponent<LineRenderer>();
-        lineRenderer.positionCount = 2;
-        lineRenderer.material = lineRenderMaterial;
+        Vector2 dir = nextNode.nodeGO.transform.position - lineRenderer.transform.position; //calculates vector direction
+        float angleRad = MathF.Atan2(dir.y, dir.x); //angle in radians
+        float angleDeg = angleRad * Mathf.Rad2Deg; //angle in degrees
 
-        lineRenderer.widthMultiplier = 0.25f;
-        lineRenderer.colorGradient = lineRenderColor;
-
-        lineRenderer.SetPosition(0, node.nodeGO.transform.localPosition);
-        lineRenderer.SetPosition(1, nextNode.nodeGO.transform.localPosition);
-        node.nodeGO.AddComponent<MaintainLineRenderer>().AssignProperties(lineRenderer, node.nodeGO.transform, nextNode.nodeGO.transform);
+        lineRenderer.transform.rotation = Quaternion.Euler( 0,0, angleDeg);
         node.conectedToNext.Add(nextNode.nodeGO);
-        nextNode.conectedToPrev.Add(node.nodeGO);
+        nextNode.conectedToPrev.Add(node.nodeGO);    
 
     }
 
