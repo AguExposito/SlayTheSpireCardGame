@@ -49,8 +49,6 @@ public class MapGenerator : MonoBehaviour
     [Serializable]
     class Node{
         public MapGenerator mapGenerator;
-        public List<GameObject> conectedToNext = new List<GameObject>();
-        public List<GameObject> conectedToPrev = new List<GameObject>();
         public GameObject nodeGO;
         public Sprite sprite;
         public enum roomType {fight, events, subBoss, relax};
@@ -418,8 +416,6 @@ public class MapGenerator : MonoBehaviour
         if (node.nodeGO.GetComponent<ActiveNodes>() != null) {
             node.nodeGO.GetComponent<ActiveNodes>().connectedNextNodes.Add(nextNode.nodeGO);
         }
-        node.conectedToNext.Add(nextNode.nodeGO);
-        nextNode.conectedToPrev.Add(node.nodeGO);    
 
     }
 
