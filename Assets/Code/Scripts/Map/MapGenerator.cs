@@ -123,17 +123,7 @@ public class MapGenerator : MonoBehaviour
             nodeGO.GetComponent<Button>().interactable = false;
             
         }
-        public void ActiveNextNodes()
-        {
-            Debug.Log(conectedToPrev.Count + " COunt");
-            if (conectedToPrev.Count>0) {
-                foreach (GameObject prevNode in conectedToPrev)
-                {
-                    prevNode.GetComponent<Button>().interactable = true;
-                }
-            }
-            mapGen.nodesList2.Add(this);
-        }
+        
 
     }
     
@@ -149,14 +139,6 @@ public class MapGenerator : MonoBehaviour
         GenerateNodes();
         MakeConnections();
 
-
-        activeNodesAction += initialRoom.ActiveNextNodes;        
-        initialRoom.nodeGO.GetComponent<Button>().onClick.AddListener(activeNodesAction);
-        foreach (Node n in nodesList)
-        {
-            activeNodesAction += n.ActiveNextNodes;
-            n.nodeGO.GetComponent<Button>().onClick.AddListener(activeNodesAction);
-        }
     }
 
     private void GenerateNodes()
@@ -428,6 +410,14 @@ public class MapGenerator : MonoBehaviour
         float angleDeg = angleRad * Mathf.Rad2Deg; //angle in degrees
 
         lineRenderer.transform.rotation = Quaternion.Euler( 0,0, angleDeg);
+
+        if (nextNode.nodeGO.GetComponent<ActiveNodes>() != null)
+        {
+            nextNode.nodeGO.GetComponent<ActiveNodes>().connectedPrevNodes.Add(node.nodeGO);
+        }
+        if (node.nodeGO.GetComponent<ActiveNodes>() != null) {
+            node.nodeGO.GetComponent<ActiveNodes>().connectedNextNodes.Add(nextNode.nodeGO);
+        }
         node.conectedToNext.Add(nextNode.nodeGO);
         nextNode.conectedToPrev.Add(node.nodeGO);    
 
