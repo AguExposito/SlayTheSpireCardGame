@@ -8,6 +8,7 @@ TagManager:
   - Node
   - FinalNode
   - NodeContainer
+  - Card
   layers:
   - Default
   - TransparentFX
@@ -44,4 +45,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Card
+    uniqueID: 1163589823
+    locked: 0
+  - name: CardText
+    uniqueID: 2227811757
     locked: 0
