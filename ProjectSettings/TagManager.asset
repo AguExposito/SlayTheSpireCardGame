@@ -46,9 +46,27 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Card
+  - name: CommonCard
     uniqueID: 1163589823
     locked: 0
-  - name: CardText
+  - name: CommonCardText
     uniqueID: 2227811757
+    locked: 0
+  - name: RareCard
+    uniqueID: 1920039603
+    locked: 0
+  - name: RareCardText
+    uniqueID: 369500689
+    locked: 0
+  - name: SuperRareCard
+    uniqueID: 714982785
+    locked: 0
+  - name: SuperRareCardText
+    uniqueID: 1688281491
+    locked: 0
+  - name: LegendaryCard
+    uniqueID: 4080736177
+    locked: 0
+  - name: LegendaryCardText
+    uniqueID: 2273785319
     locked: 0

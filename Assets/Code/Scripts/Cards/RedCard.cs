@@ -26,10 +26,30 @@ public class RedCard : MonoBehaviour
         //FALTA AÑADIR RAREZABUFF  
 
         switch (card.rareza) {
-            case Card.Rareza.Common: { spriteRenderer.sprite = cardRareza[0]; }break;
-            case Card.Rareza.Rare: { spriteRenderer.sprite = cardRareza[1]; } break;
-            case Card.Rareza.SuperRare: { spriteRenderer.sprite = cardRareza[2]; } break;
-            case Card.Rareza.Legendary: { spriteRenderer.sprite = cardRareza[3]; } break;
+            case Card.Rareza.Common: { 
+                    spriteRenderer.sprite = cardRareza[0]; 
+                    spriteRenderer.sortingLayerName = "CommonCard"; 
+                    background.sortingLayerName = "CommonCard"; 
+                    artWork.sortingLayerName = "CommonCardText"; 
+                }break;
+            case Card.Rareza.Rare: { 
+                    spriteRenderer.sprite = cardRareza[1];
+                    spriteRenderer.sortingLayerName = "RareCard";
+                    background.sortingLayerName = "RareCard";
+                    artWork.sortingLayerName = "RareCardText";
+                } break;
+            case Card.Rareza.SuperRare: { 
+                    spriteRenderer.sprite = cardRareza[2];
+                    spriteRenderer.sortingLayerName = "SuperRareCard";
+                    background.sortingLayerName = "SuperRareCard";
+                    artWork.sortingLayerName = "SuperRareCardText";
+                } break;
+            case Card.Rareza.Legendary: { 
+                    spriteRenderer.sprite = cardRareza[3];
+                    spriteRenderer.sortingLayerName = "LegendaryCard";
+                    background.sortingLayerName = "LegendaryCard";
+                    artWork.sortingLayerName = "LegendaryCardText";
+                } break;
         }
 
         nameTMP.text = card.name;
